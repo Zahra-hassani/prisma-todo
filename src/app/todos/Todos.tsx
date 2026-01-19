@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db'
+import { format } from 'date-fns-jalali';
 import { PenIcon, Trash2 } from 'lucide-react';
 import React from 'react'
 
@@ -17,7 +18,7 @@ async function Todos() {
         {todos.map((todo)=>(
             <div key={todo.id} className="w-full rounded-xl shadow p-5 flex justify-between items-center gap-4">
                 <p className="font-bold text-black">{todo.task}</p>
-                <p className="text-stone-400">{todo.created_at.toLocaleString()}</p>
+                <p className="text-stone-400">{format(todo.created_at,"yyyy/MM/dd, hh:mm:ss eeee")}</p>
                 <div className="flex justify-between items-center gap-4">
                     <PenIcon size={26} className='font-bold text-lg text-stone-400' />
                     <Trash2 size={26} className='font-bold text-lg text-rose-700' />

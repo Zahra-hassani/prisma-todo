@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import Completed from './Completed'
 import Todos from './Todos'
 import { PlusIcon } from 'lucide-react'
@@ -11,8 +12,7 @@ function page() {
       </div>
       <div className="flex justify-between items-center w-full gap-4 px-4 mt-7">
         <h1 className='text-2xl text-black font-bold'>Tasks</h1>
-        <button className='px-4 py-3 rounded bg-green-700 text-white flex justify-between items-center gap-3'><PlusIcon size={28} /> Add Task</button>
-      </div>
+        <button className='px-4 py-3 rounded bg-green-700 text-white'><Link className='flex justify-between items-center gap-3' href="/create"><PlusIcon size={28} /> Add Task</Link></button>      </div>
       <Todos />
       <Completed />
     </div>
