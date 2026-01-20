@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/db'
-import { format } from 'date-fns-jalali';
-import { PenIcon, Trash2 } from 'lucide-react';
+import { startOfDay, startOfMonth, startOfWeek } from 'date-fns-jalali';
+import { revalidatePath } from 'next/cache';
 import React from 'react'
+import Card from './Card';
+import FilterDate from './FilterDate';
 
 type Todo = {
     id: number;
@@ -10,20 +12,39 @@ type Todo = {
     created_at: Date;
 }
 
-async function Todos() {
-     const  todos:Todo[] = await prisma.todo.findMany();
+async function Todos({filter}:{filter:string}) {
+     const now = Date.now();
+     let filterDate : Date | undefined ;
+     
+     if(filter === "today"){
+      filterDate = startOfDay(now);
+     } else if(filter === "week"){
+      filterDate = startOfWeek(now);
+     }
+     else{
+      filterDate = startOfMonth(now);
+     }
+
+     const  todos:Todo[] = await prisma.todo.findMany({
+      where: filterDate?{
+        created_at : {gte : filterDate}
+      }: undefined
+     });
+     const filteredTodo = todos.sort((a,b)=> Number(a.completed)-Number(b.completed));
+     async function toggleTodo(id: number, completed: boolean){
+      "use server";
+      await prisma.todo.update({
+        where:{ id: id},
+        data: {completed: !completed}
+      });
+      revalidatePath('/todos');
+     }
   return (
     <div className='shadow-[0_0_2px_grey] rounded bg-stone-100 w-full h-fit p-5'>
+      <FilterDate filter= {filter} />
       <div className="border h-90 overflow-y-scroll">
-        {todos.map((todo)=>(
-            <div key={todo.id} className="w-full rounded-xl shadow p-5 flex justify-between items-center gap-4">
-                <p className="font-bold text-black">{todo.task}</p>
-                <p className="text-stone-400">{format(todo.created_at,"yyyy/MM/dd, hh:mm:ss eeee")}</p>
-                <div className="flex justify-between items-center gap-4">
-                    <PenIcon size={26} className='font-bold text-lg text-stone-400' />
-                    <Trash2 size={26} className='font-bold text-lg text-rose-700' />
-                </div>
-            </div>
+        {filteredTodo.map((todo)=>(
+            <Card key={todo.id} todo={todo} toggle={toggleTodo} />
         ))}
       </div>
     </div>
