@@ -14,10 +14,10 @@ function FilterDate({filter}:{filter:string}) {
         else{
             newParams.set('filter',value);
         }
-        router.push(`/?${newParams}`);
+        router.push(`todos/?${newParams}`);
     }
   return (
-    <select value={filter} onChange={(e)=> handleFilter(e.target.value)} >
+    <select value={filter} className="text-black border" onChange={(e)=> handleFilter(e.target.value)} >
       <option value="all">ALL</option>
       <option value="today">Today</option>
       <option value="week">This week</option>
